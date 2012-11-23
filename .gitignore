@@ -1,5 +1,5 @@
 /.idea
-/bin
-/gen
-/tmp
+bin
+gen
+tmp
 local.properties
