@@ -1,4 +1,5 @@
-bin
-gen
-tmp
+/.idea
+/bin
+/gen
+/tmp
 local.properties
