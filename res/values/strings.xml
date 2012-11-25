@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name='app_name'>
         Widget
     </string>
+  <string name="widget_text_format"><xliff:g id="prefix">%1$s</xliff:g></string>
 </resources>

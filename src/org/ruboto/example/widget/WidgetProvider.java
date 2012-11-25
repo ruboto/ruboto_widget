@@ -86,7 +86,8 @@ public class WidgetProvider extends AppWidgetProvider {
         Log.d(TAG, "updateAppWidget appWidgetId=" + appWidgetId + " titlePrefix=" + titlePrefix);
         // Getting the string this way allows the string to be localized.  The format
         // string is filled in using java.util.Formatter-style format strings.
-        CharSequence text = "Hullo!";
+        CharSequence text = context.getString(R.string.widget_text_format,
+                WidgetConfigure.loadTitlePref(context, appWidgetId));
 
         // Construct the RemoteViews object.  It takes the package name (in our case, it's our
         // package, but it needs this because on the other side it's the widget host inflating
