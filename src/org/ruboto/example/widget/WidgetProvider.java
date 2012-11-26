@@ -1,101 +1,464 @@
-/*
- * Copyright (C) 2008 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Generated Ruboto subclass with method base "all"
 
 package org.ruboto.example.widget;
 
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.SystemClock;
-import android.util.Log;
-import android.widget.RemoteViews;
+import org.ruboto.JRubyAdapter;
+import org.ruboto.Log;
+import org.ruboto.Script;
+import org.ruboto.ScriptInfo;
+import org.ruboto.ScriptLoader;
 
-// Need the following import to get access to the app resources, since this
-// class is in a sub-package.
-import org.ruboto.example.widget.R;
+public class WidgetProvider extends android.appwidget.AppWidgetProvider implements org.ruboto.RubotoComponent {
+    private final ScriptInfo scriptInfo = new ScriptInfo();
+    {
+		scriptInfo.setRubyClassName(getClass().getSimpleName());
+    }
 
-/**
- * A widget provider.  We have a string that we pull from a preference in order to show
- * the configuration settings and the current time when the widget was updated.  We also
- * register a BroadcastReceiver for time-changed and timezone-changed broadcasts, and
- * update then too.
- */
-public class WidgetProvider extends AppWidgetProvider {
-    // log tag
-    private static final String TAG = "WidgetProvider";
+  public WidgetProvider() {
+    super();
+  }
 
-    @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        Log.d(TAG, "onUpdate");
-        // For each widget that needs an update, get the text that we should display:
-        //   - Create a RemoteViews object for it
-        //   - Set the text in the RemoteViews object
-        //   - Tell the AppWidgetManager to show that views object for the widget.
-        final int N = appWidgetIds.length;
-        for (int i=0; i<N; i++) {
-            int appWidgetId = appWidgetIds[i];
-            String titlePrefix = WidgetConfigure.loadTitlePref(context, appWidgetId);
-            updateAppWidget(context, appWidgetManager, appWidgetId, titlePrefix);
+    public ScriptInfo getScriptInfo() {
+        return scriptInfo;
+    }
+
+  public void onDeleted(android.content.Context context, int[] appWidgetIds) {
+    if (ScriptLoader.isCalledFromJRuby()) {super.onDeleted(context, appWidgetIds); return;}
+    if (!JRubyAdapter.setUpJRuby(context)) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+      {super.onDeleted(context, appWidgetIds); return;}
+    }
+	ScriptLoader.loadScript(this);
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.onDeleted(context, appWidgetIds); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_deleted}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_context", context);
+        JRubyAdapter.put("$arg_appWidgetIds", appWidgetIds);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.on_deleted($arg_context, $arg_appWidgetIds)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "on_deleted", new Object[]{context, appWidgetIds});
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
         }
-    }
-    
-    @Override
-    public void onDeleted(Context context, int[] appWidgetIds) {
-        Log.d(TAG, "onDeleted");
-        // When the user deletes the widget, delete the preference associated with it.
-        final int N = appWidgetIds.length;
-        for (int i=0; i<N; i++) {
-            WidgetConfigure.deleteTitlePref(context, appWidgetIds[i]);
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :onDeleted}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_context", context);
+          JRubyAdapter.put("$arg_appWidgetIds", appWidgetIds);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.onDeleted($arg_context, $arg_appWidgetIds)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "onDeleted", new Object[]{context, appWidgetIds});
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
         }
+      } else {
+        {super.onDeleted(context, appWidgetIds); return;}
+      }
     }
+  }
 
-    @Override
-    public void onEnabled(Context context) {
-        Log.d(TAG, "onEnabled");
+  public void onDisabled(android.content.Context context) {
+    if (ScriptLoader.isCalledFromJRuby()) {super.onDisabled(context); return;}
+    if (!JRubyAdapter.setUpJRuby(context)) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+      {super.onDisabled(context); return;}
     }
-
-    @Override
-    public void onDisabled(Context context) {
-        // When the first widget is created, stop listening for the TIMEZONE_CHANGED and
-        // TIME_CHANGED broadcasts.
-        Log.d(TAG, "onDisabled");
-        PackageManager pm = context.getPackageManager();
-        pm.setComponentEnabledSetting(
-                new ComponentName("com.example.android.apis", ".appwidget.ExampleBroadcastReceiver"),
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
+	ScriptLoader.loadScript(this);
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.onDisabled(context); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_disabled}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_context", context);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.on_disabled($arg_context)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "on_disabled", context);
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :onDisabled}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_context", context);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.onDisabled($arg_context)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "onDisabled", context);
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        {super.onDisabled(context); return;}
+      }
     }
+  }
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-            int appWidgetId, String titlePrefix) {
-        Log.d(TAG, "updateAppWidget appWidgetId=" + appWidgetId + " titlePrefix=" + titlePrefix);
-        // Getting the string this way allows the string to be localized.  The format
-        // string is filled in using java.util.Formatter-style format strings.
-        CharSequence text = context.getString(R.string.widget_text_format,
-                WidgetConfigure.loadTitlePref(context, appWidgetId));
-
-        // Construct the RemoteViews object.  It takes the package name (in our case, it's our
-        // package, but it needs this because on the other side it's the widget host inflating
-        // the layout from our package).
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        views.setTextViewText(R.id.text, text);
-
-        // Tell the widget manager
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+  public void onEnabled(android.content.Context context) {
+    if (ScriptLoader.isCalledFromJRuby()) {super.onEnabled(context); return;}
+    if (!JRubyAdapter.setUpJRuby(context)) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+      {super.onEnabled(context); return;}
     }
+	ScriptLoader.loadScript(this);
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.onEnabled(context); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_enabled}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_context", context);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.on_enabled($arg_context)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "on_enabled", context);
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :onEnabled}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_context", context);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.onEnabled($arg_context)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "onEnabled", context);
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        {super.onEnabled(context); return;}
+      }
+    }
+  }
+
+  public void onReceive(android.content.Context context, android.content.Intent intent) {
+    if (ScriptLoader.isCalledFromJRuby()) {super.onReceive(context, intent); return;}
+    if (!JRubyAdapter.setUpJRuby(context)) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+      {super.onReceive(context, intent); return;}
+    }
+	ScriptLoader.loadScript(this);
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.onReceive(context, intent); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_receive}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_context", context);
+        JRubyAdapter.put("$arg_intent", intent);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.on_receive($arg_context, $arg_intent)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "on_receive", new Object[]{context, intent});
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :onReceive}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_context", context);
+          JRubyAdapter.put("$arg_intent", intent);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.onReceive($arg_context, $arg_intent)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "onReceive", new Object[]{context, intent});
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        {super.onReceive(context, intent); return;}
+      }
+    }
+  }
+
+  public void onUpdate(android.content.Context context, android.appwidget.AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    if (ScriptLoader.isCalledFromJRuby()) {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
+    if (!JRubyAdapter.setUpJRuby(context)) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+      {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
+    }
+	ScriptLoader.loadScript(this);
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_update}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_context", context);
+        JRubyAdapter.put("$arg_appWidgetManager", appWidgetManager);
+        JRubyAdapter.put("$arg_appWidgetIds", appWidgetIds);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.on_update($arg_context, $arg_appWidgetManager, $arg_appWidgetIds)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "on_update", new Object[]{context, appWidgetManager, appWidgetIds});
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :onUpdate}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_context", context);
+          JRubyAdapter.put("$arg_appWidgetManager", appWidgetManager);
+          JRubyAdapter.put("$arg_appWidgetIds", appWidgetIds);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.onUpdate($arg_context, $arg_appWidgetManager, $arg_appWidgetIds)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "onUpdate", new Object[]{context, appWidgetManager, appWidgetIds});
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
+      }
+    }
+  }
+
+  public android.os.IBinder peekService(android.content.Context myContext, android.content.Intent service) {
+    if (ScriptLoader.isCalledFromJRuby()) return super.peekService(myContext, service);
+    if (!JRubyAdapter.setUpJRuby(myContext)) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+      {return super.peekService(myContext, service);}
+    }
+	ScriptLoader.loadScript(this);
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) return super.peekService(myContext, service);
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :peek_service}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_myContext", myContext);
+        JRubyAdapter.put("$arg_service", service);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        return (android.os.IBinder) JRubyAdapter.runScriptlet("$ruby_instance.peek_service($arg_myContext, $arg_service)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          return (android.os.IBinder) JRubyAdapter.runRubyMethod(android.os.IBinder.class, scriptInfo.getRubyInstance(), "peek_service", new Object[]{myContext, service});
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :peekService}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_myContext", myContext);
+          JRubyAdapter.put("$arg_service", service);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          return (android.os.IBinder) JRubyAdapter.runScriptlet("$ruby_instance.peekService($arg_myContext, $arg_service)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            return (android.os.IBinder) JRubyAdapter.runRubyMethod(android.os.IBinder.class, scriptInfo.getRubyInstance(), "peekService", new Object[]{myContext, service});
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        return super.peekService(myContext, service);
+      }
+    }
+  }
+
+  public java.lang.Object clone()  throws java.lang.CloneNotSupportedException{
+    if (ScriptLoader.isCalledFromJRuby()) return super.clone();
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) return super.clone();
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :clone}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        return (java.lang.Object) JRubyAdapter.runScriptlet("$ruby_instance.clone()");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          return (java.lang.Object) JRubyAdapter.runRubyMethod(java.lang.Object.class, scriptInfo.getRubyInstance(), "clone");
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :clone}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          return (java.lang.Object) JRubyAdapter.runScriptlet("$ruby_instance.clone()");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            return (java.lang.Object) JRubyAdapter.runRubyMethod(java.lang.Object.class, scriptInfo.getRubyInstance(), "clone");
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        return super.clone();
+      }
+    }
+  }
+
+  public boolean equals(java.lang.Object o) {
+    if (ScriptLoader.isCalledFromJRuby()) return super.equals(o);
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) return super.equals(o);
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :equals}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_o", o);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        return (Boolean) JRubyAdapter.runScriptlet("$ruby_instance.equals($arg_o)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          return (Boolean) JRubyAdapter.runRubyMethod(Boolean.class, scriptInfo.getRubyInstance(), "equals", o);
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :equals}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_o", o);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          return (Boolean) JRubyAdapter.runScriptlet("$ruby_instance.equals($arg_o)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            return (Boolean) JRubyAdapter.runRubyMethod(Boolean.class, scriptInfo.getRubyInstance(), "equals", o);
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        return super.equals(o);
+      }
+    }
+  }
+
+  public void finalize()  throws java.lang.Throwable{
+    if (ScriptLoader.isCalledFromJRuby()) {super.finalize(); return;}
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.finalize(); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :finalize}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.finalize()");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "finalize");
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :finalize}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.finalize()");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "finalize");
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        {super.finalize(); return;}
+      }
+    }
+  }
+
+  public int hashCode() {
+    if (ScriptLoader.isCalledFromJRuby()) return super.hashCode();
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) return super.hashCode();
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :hash_code}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        return (Integer) ((Number)JRubyAdapter.runScriptlet("$ruby_instance.hash_code()")).intValue();
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          return (Integer) JRubyAdapter.runRubyMethod(Integer.class, scriptInfo.getRubyInstance(), "hash_code");
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :hashCode}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          return (Integer) ((Number)JRubyAdapter.runScriptlet("$ruby_instance.hashCode()")).intValue();
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            return (Integer) JRubyAdapter.runRubyMethod(Integer.class, scriptInfo.getRubyInstance(), "hashCode");
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        return super.hashCode();
+      }
+    }
+  }
+
+  public java.lang.String toString() {
+    if (ScriptLoader.isCalledFromJRuby()) return super.toString();
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) return super.toString();
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :to_string}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        return (java.lang.String) JRubyAdapter.runScriptlet("$ruby_instance.to_string()");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          return (java.lang.String) JRubyAdapter.runRubyMethod(java.lang.String.class, scriptInfo.getRubyInstance(), "to_string");
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :toString}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          return (java.lang.String) JRubyAdapter.runScriptlet("$ruby_instance.toString()");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            return (java.lang.String) JRubyAdapter.runRubyMethod(java.lang.String.class, scriptInfo.getRubyInstance(), "toString");
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        return super.toString();
+      }
+    }
+  }
+
 }

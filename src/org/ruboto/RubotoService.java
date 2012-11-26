@@ -322,4 +322,86 @@ public class RubotoService extends android.app.Service implements org.ruboto.Rub
     }
   }
 
+  public void onTaskRemoved(android.content.Intent arg0) {
+    if (ScriptLoader.isCalledFromJRuby()) {super.onTaskRemoved(arg0); return;}
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: RubotoService#onTaskRemoved");
+      {super.onTaskRemoved(arg0); return;}
+    }
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.onTaskRemoved(arg0); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_task_removed}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_arg0", arg0);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.on_task_removed($arg_arg0)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "on_task_removed", arg0);
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :onTaskRemoved}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_arg0", arg0);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.onTaskRemoved($arg_arg0)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "onTaskRemoved", arg0);
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        {super.onTaskRemoved(arg0); return;}
+      }
+    }
+  }
+
+  public void onTrimMemory(int arg0) {
+    if (ScriptLoader.isCalledFromJRuby()) {super.onTrimMemory(arg0); return;}
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: RubotoService#onTrimMemory");
+      {super.onTrimMemory(arg0); return;}
+    }
+    String rubyClassName = scriptInfo.getRubyClassName();
+    if (rubyClassName == null) {super.onTrimMemory(arg0); return;}
+    if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_trim_memory}")) {
+      // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+      if (JRubyAdapter.isJRubyPreOneSeven()) {
+        JRubyAdapter.put("$arg_arg0", arg0);
+        JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+        JRubyAdapter.runScriptlet("$ruby_instance.on_trim_memory($arg_arg0)");
+      } else {
+        if (JRubyAdapter.isJRubyOneSeven()) {
+          JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "on_trim_memory", arg0);
+        } else {
+          throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+        }
+      }
+    } else {
+      if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :onTrimMemory}")) {
+        // FIXME(uwe): Simplify when we stop support for RubotoCore 0.4.7
+        if (JRubyAdapter.isJRubyPreOneSeven()) {
+          JRubyAdapter.put("$arg_arg0", arg0);
+          JRubyAdapter.put("$ruby_instance", scriptInfo.getRubyInstance());
+          JRubyAdapter.runScriptlet("$ruby_instance.onTrimMemory($arg_arg0)");
+        } else {
+          if (JRubyAdapter.isJRubyOneSeven()) {
+            JRubyAdapter.runRubyMethod(scriptInfo.getRubyInstance(), "onTrimMemory", arg0);
+          } else {
+            throw new RuntimeException("Unknown JRuby version: " + JRubyAdapter.get("JRUBY_VERSION"));
+          }
+        }
+      } else {
+        {super.onTrimMemory(arg0); return;}
+      }
+    }
+  }
+
 }
