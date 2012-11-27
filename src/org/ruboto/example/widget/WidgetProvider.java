@@ -12,6 +12,7 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
     private final ScriptInfo scriptInfo = new ScriptInfo();
     {
 		scriptInfo.setRubyClassName(getClass().getSimpleName());
+		ScriptLoader.loadScript(this);
     }
 
   public WidgetProvider() {
@@ -24,11 +25,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onDeleted(android.content.Context context, int[] appWidgetIds) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onDeleted(context, appWidgetIds); return;}
-    if (!JRubyAdapter.setUpJRuby(context)) {
+    if (!JRubyAdapter.isInitialized()) {
       Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
       {super.onDeleted(context, appWidgetIds); return;}
     }
-	ScriptLoader.loadScript(this);
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) {super.onDeleted(context, appWidgetIds); return;}
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_deleted}")) {
@@ -68,11 +68,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onDisabled(android.content.Context context) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onDisabled(context); return;}
-    if (!JRubyAdapter.setUpJRuby(context)) {
-      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDisabled");
       {super.onDisabled(context); return;}
     }
-	ScriptLoader.loadScript(this);
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) {super.onDisabled(context); return;}
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_disabled}")) {
@@ -110,11 +109,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onEnabled(android.content.Context context) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onEnabled(context); return;}
-    if (!JRubyAdapter.setUpJRuby(context)) {
-      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onEnabled");
       {super.onEnabled(context); return;}
     }
-	ScriptLoader.loadScript(this);
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) {super.onEnabled(context); return;}
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_enabled}")) {
@@ -152,11 +150,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onReceive(android.content.Context context, android.content.Intent intent) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onReceive(context, intent); return;}
-    if (!JRubyAdapter.setUpJRuby(context)) {
-      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onReceive");
       {super.onReceive(context, intent); return;}
     }
-	ScriptLoader.loadScript(this);
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) {super.onReceive(context, intent); return;}
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_receive}")) {
@@ -196,11 +193,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onUpdate(android.content.Context context, android.appwidget.AppWidgetManager appWidgetManager, int[] appWidgetIds) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
-    if (!JRubyAdapter.setUpJRuby(context)) {
-      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onUpdate");
       {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
     }
-	ScriptLoader.loadScript(this);
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_update}")) {
@@ -242,11 +238,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public android.os.IBinder peekService(android.content.Context myContext, android.content.Intent service) {
     if (ScriptLoader.isCalledFromJRuby()) return super.peekService(myContext, service);
-    if (!JRubyAdapter.setUpJRuby(myContext)) {
-      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
-      {return super.peekService(myContext, service);}
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#peekService");
+      return super.peekService(myContext, service);
     }
-	ScriptLoader.loadScript(this);
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) return super.peekService(myContext, service);
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :peek_service}")) {
@@ -286,6 +281,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public java.lang.Object clone()  throws java.lang.CloneNotSupportedException{
     if (ScriptLoader.isCalledFromJRuby()) return super.clone();
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#clone");
+      return super.clone();
+    }
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) return super.clone();
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :clone}")) {
@@ -321,6 +320,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public boolean equals(java.lang.Object o) {
     if (ScriptLoader.isCalledFromJRuby()) return super.equals(o);
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#equals");
+      return super.equals(o);
+    }
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) return super.equals(o);
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :equals}")) {
@@ -358,6 +361,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void finalize()  throws java.lang.Throwable{
     if (ScriptLoader.isCalledFromJRuby()) {super.finalize(); return;}
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#finalize");
+      {super.finalize(); return;}
+    }
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) {super.finalize(); return;}
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :finalize}")) {
@@ -393,6 +400,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public int hashCode() {
     if (ScriptLoader.isCalledFromJRuby()) return super.hashCode();
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#hashCode");
+      return super.hashCode();
+    }
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) return super.hashCode();
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :hash_code}")) {
@@ -428,6 +439,10 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public java.lang.String toString() {
     if (ScriptLoader.isCalledFromJRuby()) return super.toString();
+    if (!JRubyAdapter.isInitialized()) {
+      Log.i("Method called before JRuby runtime was initialized: WidgetProvider#toString");
+      return super.toString();
+    }
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) return super.toString();
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :to_string}")) {
