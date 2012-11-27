@@ -12,7 +12,6 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
     private final ScriptInfo scriptInfo = new ScriptInfo();
     {
 		scriptInfo.setRubyClassName(getClass().getSimpleName());
-		ScriptLoader.loadScript(this);
     }
 
   public WidgetProvider() {
@@ -25,7 +24,7 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onDeleted(android.content.Context context, int[] appWidgetIds) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onDeleted(context, appWidgetIds); return;}
-    if (!JRubyAdapter.isInitialized()) {
+    if (!JRubyAdapter.setUpJRuby(context)) {
       Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDeleted");
       {super.onDeleted(context, appWidgetIds); return;}
     }
@@ -68,7 +67,7 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onDisabled(android.content.Context context) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onDisabled(context); return;}
-    if (!JRubyAdapter.isInitialized()) {
+    if (!JRubyAdapter.setUpJRuby(context)) {
       Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onDisabled");
       {super.onDisabled(context); return;}
     }
@@ -109,7 +108,7 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onEnabled(android.content.Context context) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onEnabled(context); return;}
-    if (!JRubyAdapter.isInitialized()) {
+    if (!JRubyAdapter.setUpJRuby(context)) {
       Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onEnabled");
       {super.onEnabled(context); return;}
     }
@@ -150,10 +149,11 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onReceive(android.content.Context context, android.content.Intent intent) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onReceive(context, intent); return;}
-    if (!JRubyAdapter.isInitialized()) {
+    if (!JRubyAdapter.setUpJRuby(context)) {
       Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onReceive");
       {super.onReceive(context, intent); return;}
     }
+    ScriptLoader.loadScript(this);
     String rubyClassName = scriptInfo.getRubyClassName();
     if (rubyClassName == null) {super.onReceive(context, intent); return;}
     if ((Boolean)JRubyAdapter.runScriptlet(rubyClassName + ".instance_methods(false).any?{|m| m.to_sym == :on_receive}")) {
@@ -193,7 +193,7 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public void onUpdate(android.content.Context context, android.appwidget.AppWidgetManager appWidgetManager, int[] appWidgetIds) {
     if (ScriptLoader.isCalledFromJRuby()) {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
-    if (!JRubyAdapter.isInitialized()) {
+    if (!JRubyAdapter.setUpJRuby(context)) {
       Log.i("Method called before JRuby runtime was initialized: WidgetProvider#onUpdate");
       {super.onUpdate(context, appWidgetManager, appWidgetIds); return;}
     }
@@ -238,7 +238,7 @@ public class WidgetProvider extends android.appwidget.AppWidgetProvider implemen
 
   public android.os.IBinder peekService(android.content.Context myContext, android.content.Intent service) {
     if (ScriptLoader.isCalledFromJRuby()) return super.peekService(myContext, service);
-    if (!JRubyAdapter.isInitialized()) {
+    if (!JRubyAdapter.setUpJRuby(myContext)) {
       Log.i("Method called before JRuby runtime was initialized: WidgetProvider#peekService");
       return super.peekService(myContext, service);
     }

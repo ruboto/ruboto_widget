@@ -68,7 +68,6 @@ end
 #
 # Basic Activity Setup
 #
-
 module Ruboto
   module Activity
     def method_missing(method, *args, &block)

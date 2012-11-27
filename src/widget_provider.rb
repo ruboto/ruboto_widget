@@ -20,7 +20,7 @@ class WidgetProvider
     Log.d(TAG, "onUpdate")
     appWidgetIds.each do |appWidgetId|
       titlePrefix = WidgetConfigure.loadTitlePref(context, appWidgetId)
-      updateAppWidget(context, appWidgetManager, appWidgetId, titlePrefix)
+      WidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId, titlePrefix)
     end
   end
 
@@ -40,7 +40,7 @@ class WidgetProvider
     PackageManager pm = context.getPackageManager()
   end
 
-  def updateAppWidget(context, appWidgetManager, appWidgetId, titlePrefix)
+  def self.updateAppWidget(context, appWidgetManager, appWidgetId, titlePrefix)
     Log.d(TAG, "updateAppWidget appWidgetId=#{appWidgetId} titlePrefix=#{titlePrefix}")
     text = context.getString(R.string.widget_text_format, WidgetConfigure.loadTitlePref(context, appWidgetId))
     views = RemoteViews.new(context.getPackageName(), R.layout.widget)
